@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using AutoFacTest.Controllers;
+using AutoFacTest.Modules;
+using Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using AutoFacTest.Modules;
-using Domain;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 
 namespace AutoFacTest
 {
@@ -38,18 +38,34 @@ namespace AutoFacTest
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+            //替换控制器所有者(属性注入需要启用下面的代码)
+            services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<TestContext>();
 
             services.AddDirectoryBrowser();
             //实例化容器
-            var containerBuilder = new ContainerBuilder();
+            var builder = new ContainerBuilder();
             //模块化注入
-            containerBuilder.RegisterModule<DefaultModule>();
+            builder.RegisterModule<DefaultModule>();
+
+            #region 构造函数注入
+
             //替换自带的以来注入容器为autofac
-            containerBuilder.Populate(services);
-            var container = containerBuilder.Build();
+            /* builder.Populate(services);
+            
+             */
+            #endregion
+
+            #region 属性注入
+
+            //属性注入控制器
+            builder.RegisterType<DefaultController>().PropertiesAutowired();
+            builder.Populate(services);
+            #endregion
+
+            var container = builder.Build();
             return new AutofacServiceProvider(container);
 
         }

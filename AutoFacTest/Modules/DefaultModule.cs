@@ -15,7 +15,9 @@ namespace AutoFacTest.Modules
         {
             //base.Load(builder);
             //注入测试服务
-            builder.RegisterType<TestService>().As<ITestService>();
+            //builder.RegisterType<TestService>().As<ITestService>();
+            //属性注入(需要与Startup中属性注入方式结合使用)
+            builder.RegisterType<TestService>().As<ITestService>().PropertiesAutowired();
         }
 
     }
