@@ -1,0 +1,65 @@
+﻿ 表示层
+
+Presentation：
+
+View Models (Javascript)：=
+
+Views (HTML/CSS)：=
+
+Localization,  Navigation, Notifications：多语言，菜单，通知
+
+web：
+
+Web API Controllers：webapi接口
+
+MVC Controllers, OData：OData是什么我也不知道
+
+应用层（Application）
+
+Application Services：应用服务
+
+DTOs：数据传输对象
+
+DTO Mappers：AutoMapper进行实体与DTO之间的映射
+
+Authorization：参数验证
+
+Session：
+
+Audit Logging：审计日志
+
+应用层提供一些应用服务（Application Services）方法供展现层调用。一个应用服务方法接收一个DTO(数据传输对象)作为输入参数，使用这个输入参数执行特定的领域层操作，并根据需要可返回另一个DTO。在展现层到领域层之间，不应该接收或返回实体(Entity)对象，应该进行DTO映射。一个应用服务方法通常被认为是一个工作单元（Unit of Work）。用户输入参数的验证工作也应该在应用层实现。ABP提供了一个基础架构让我们很容易地实现输入参数有效性验证。建议使用一种像AutoMapper这样的工具来进行实体与DTO之间的映射。
+
+领域层（Domain(Core)）
+
+Entities:实体，领域对象，代表业务领域的数据和操作
+
+value objects：实体模型
+
+Repositories：仓储，用来操作数据库进行数据存取。仓储接口在领域层定义，而仓储的实现类应该写在基础设施层。
+
+Domain Services：领域服务，当处理的业务规则跨越两个（及以上）实体时，应该写在领域服务方法里面。
+
+Domain Event：领域事件，在领域层某些特定情况发生时可以触发领域事件，并且在相应地方捕获并处理它们。
+
+Unit of Work：工作单元，一种设计模式，用于维护一个由已经被修改(如增加、删除和更新等)的业务对象组成的列表。它负责协调这些业务对象的持久化工作及并发问题。
+
+基础设施（Infrastructure）
+
+ORM (EntityFramework, NHibernate)：ORM框架，ABP提供了EF和NHibernate支持
+
+DB Migrations：EF Code First创建数据库用的
+
+Background Jobs：作业调度和自动任务，（类似Quartz.NET）
+
+补充（单页面应用和多页面应用）
+
+在单页面应用中（SPA）,所有的资源都会一次性加载到客户端（或者只加载核心资源，懒加载其他资源），所有的后续和服务器的交互都是通过Ajax调用。Html代码是使用从服务端接收到的数据在客户端生成的。整个页面不会刷新，视图只是在必要时换入换出。有许多的Javascript SPA框架，比如AngularJs，DurandalJs,BackboneJs和EmberJs。ABP可以使用它们中的任何一个，但是提供了使用 AngularJs和DurandalJs的样例。
+
+在多页面（经典）应用中(MPA)，客户端向服务端发送请求，服务端代码（ASP.NET MVC 控制器）从数据库中获取数据，然后Razor视图引擎生成html 代码。这些编译后的页面发回给客户端显示。每个新的页面都会导致完整页面的刷新。
+
+SPA和MPA涉及了完全不同的架构。对于后台管理系统来说，SPA是最好的候选者，另一方面，博客更适合MPA模型，因为博客渴望被搜索引擎抓取数据。虽然有很多工具可以使SPA对于搜索引擎可见，但是目前的一般做法就是使用MPA。
+
+最后
+
+ABP平衡了一些最好的框架或者类库，除此之外，ABP自己的类和系统也提供了一个很好的用于N层架构Web应用构建的基础设施，也提供了很轻松地创建分层的解决方案的模板，用作应用的起点。
